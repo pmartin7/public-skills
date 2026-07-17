@@ -1,0 +1,12 @@
+#!/bin/sh
+# Runs the repository harness before every commit.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Dependencies: python3 (standard library only).
+
+echo "harness: running python3 harness/check.py"
+python3 "$(git rev-parse --show-toplevel)/harness/check.py" || {
+  echo ""
+  echo "harness: commit blocked. Fix the failures above and retry."
+  echo "harness: each failure message contains its own remediation instructions."
+  exit 1
+}

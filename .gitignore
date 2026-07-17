@@ -1,0 +1,2 @@
+# Local run artifacts (skill execution outputs, not part of the published skills)
+/run-artifacts/
