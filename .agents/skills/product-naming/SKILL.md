@@ -589,6 +589,25 @@ The Orchestrator produces a decision-oriented report.
 
 Do not bury the result under the creative process. Start with the shortlist.
 
+### Presentation format
+
+When the environment supports a standalone rich report or canvas, create one. Otherwise use the same section order in Markdown. The report must be a single scrollable decision page; do not hide the top 12, top 30, evidence, or method behind tabs.
+
+Render sections in this exact order:
+
+1. **Report header** — `PRODUCT NAMING DECISION REPORT`, product/category title, and one-sentence naming brief.
+2. **Decision callout** — state whether any candidate is ready for deeper consideration and name the recommended next action.
+3. **Three decision cards** — quality leader, premium/serious option, and warm/playful option. Each card states the name, vote evidence, and material caveat.
+4. **Method statistics** — four prominent counts: personas, raw associations, raw names, and final blind-ballot pool.
+5. **Top-12 vote chart** — horizontal bars in frozen vote order, labeled with Borda points; include axis meaning, source, and research date. If charts are unavailable, use a compact ranked score list.
+6. **Official shortlist table** — compact columns for rank, name with pronunciation and syllables, points/voters, conflict signal, exact `.com` use, best domain lead, and key risk.
+7. **Expandable evidence and rationale** — one disclosure per top-12 name containing rationale, linked values, key risk, and citations. In Markdown, use `<details>` blocks when supported or level-three headings otherwise.
+8. **Top-30 table** — show all ranks 1-30 directly on the page with name, points, voters, conflict screen, and one-line value link. Never make the user select a tab to discover ranks 13-30.
+9. **Naming brief and method** — place side by side when layout permits; otherwise render consecutively.
+10. **Preliminary-research callout** — end with the required availability disclaimer.
+
+Use flat, restrained styling with one visually dominant decision. Avoid decorative gradients, shadows, emojis, and a wall of identical cards. Every factual conflict and domain-use claim must link to its source.
+
 ### Required final structure
 
 #### 1. Naming brief
@@ -685,6 +704,9 @@ Before finalizing, verify:
 - [ ] Borda scores and tie-breakers were calculated correctly
 - [ ] Official top 12 were frozen before research
 - [ ] Top 30 were retained
+- [ ] The final report follows the required single-page presentation order
+- [ ] All 30 ranked names are visible without opening a tab or requesting another artifact
+- [ ] The top-12 vote chart or score-list fallback is labeled with metric, source, and research date
 - [ ] Every top-12 factual conflict or domain-use claim is cited
 - [ ] Checks stayed within the Stage-7 query budget
 - [ ] Domain results describe visible use, not registration availability
