@@ -59,7 +59,7 @@ The orchestrator creates the following agents or emulates them as isolated passe
 - **8 Ideators** — each receives a distinct socio-economic and decision-making persona
 - **1 Curator** — deduplicates and organizes association pools after rounds 1 and 2
 - **1 Ballot Manager** — anonymizes, randomizes, tallies, and resolves ties
-- **1 Availability Researcher** — runs lightweight web searches for obvious name conflicts and domain use
+- **1 Web Checker** — runs lightweight web searches for obvious name conflicts and domain use
 - **1 Orchestrator** — validates inputs, manages state, enforces schemas, and writes the final report
 
 Never claim that parallel subagents were used when the environment does not provide them. In that case, perform eight deliberately isolated ideation passes and label the method accurately.
@@ -493,7 +493,7 @@ Exit criterion: top 12 and top 30 are frozen before lightweight web and domain c
 
 ## Stage 7 — Lightweight web and domain checks
 
-The Availability Researcher investigates only after voting is complete.
+The Web Checker investigates only after voting is complete.
 
 Run lightweight checks on the top 12 only. The purpose is to catch obvious conflicts and signs of domain use without turning naming into a trademark or domain-clearance project.
 
@@ -663,7 +663,7 @@ When web research is performed:
 
 # Agent prompt templates
 
-Role-specific system prompts for the Ideators, Curator, Ballot Manager voters, and Availability Researcher are in [reference.md](reference.md). Read it when instantiating agents at each stage.
+Role-specific system prompts for the Ideators, Curator, Ballot Manager voters, and Web Checker are in [reference.md](reference.md). Read it when instantiating agents at each stage.
 
 ---
 
@@ -707,6 +707,6 @@ Because this workflow is long, provide compact updates at major milestones rathe
 1. Inputs and personas finalized
 2. Association rounds curated
 3. Candidate pool ready and voting complete
-4. Availability research complete
+4. Lightweight web and domain checks complete
 
 Do not overwhelm the user with hundreds of raw associations unless they request the working set. The final report should be useful on its own, while structured artifacts preserve the detailed audit trail.
