@@ -51,6 +51,12 @@ Produce:
 7. **Keep checks lightweight and honest.** Use simple web searches as proxies for obvious conflicts and domain use. Do not perform trademark-database, corporate-registry, or exhaustive domain research unless the user explicitly asks.
 8. **Keep provenance.** Every association and name should retain its source persona, linked values, and generation round until the blind-voting stage.
 9. **Make the workflow resumable.** Save the structured result of every stage when the environment supports files or persistent state.
+10. **Fight convergence deliberately.** Aligned language models drift toward the same safe descriptive compounds — which are exactly the names adjacent products have already chosen. Enforce the stem caps, invented-name quotas, and typicality self-checks defined in Stages 5 and 6; a shortlist dominated by two-common-word compounds is a process failure, not a taste preference.
+11. **Grade conflicts by severity.** A small, niche, dormant, or adjacent-category use is a risk signal, not a veto. Only an established, actively operating same-category use blocks a recommendation. Report everything else as graded risk and leave the judgment to the user.
+
+## Model selection
+
+Ideation and voting quality depend heavily on which model runs each role. See [README.md](README.md) in this skill folder for role-by-role model-class and sampling guidance, including how to compensate when temperature is not adjustable.
 
 ## Roles
 
@@ -61,6 +67,8 @@ The orchestrator creates the following agents or emulates them as isolated passe
 - **1 Ballot Manager** — anonymizes, randomizes, tallies, and resolves ties
 - **1 Web Checker** — runs lightweight web searches for obvious name conflicts and domain use
 - **1 Orchestrator** — validates inputs, manages state, enforces schemas, and writes the final report
+
+Portable role definitions for the ideator, curator, voter, and web checker ship in this skill's `agents/` folder. When the host has them installed as project subagents (or supports registering them), spawn those roles by name so each runs on its configured model tier. Otherwise, emulate each role as an isolated pass using the prompts in [reference.md](reference.md) — the workflow is identical either way. The Ballot Manager's tally is arithmetic; prefer a short script over a model.
 
 Never claim that parallel subagents were used when the environment does not provide them. In that case, perform eight deliberately isolated ideation passes and label the method accurately.
 
@@ -361,17 +369,26 @@ Memorability devices may include:
 - Light semantic tension or surprise
 - Short invented words with intuitive phonetics
 
+### Anti-convergence rules
+
+Descriptive two-common-word compounds (`Threadlight`, `Proofloop`, `Signalcraft`) are the names every AI-assisted team generates for the same category, so they are simultaneously the least distinctive and the most likely to already be in use. Each ideator must:
+
+1. **Sample verbally before selecting.** Internally draft roughly 30 name ideas and estimate for each how likely the other seven ideators are to independently propose it or a close variant. Submit 20 with a deliberate spread: at least 8 of the 20 must be ideas the ideator judges unlikely to be duplicated.
+2. **Cap stems.** No two of an ideator's 20 candidates may share the same leading morpheme, and no morpheme (prefix, root, or suffix) may appear in more than 2 of the 20.
+3. **Avoid stock affixes.** Do not use `-ly`, `-ify`, `-io`, `-hub`, `-HQ`, or `-AI` suffixes, and avoid compound halves that merely restate the category (`mail`, `inbox`, `ad`, `task`) unless the other half is genuinely surprising.
+4. **Honor overused-territory flags.** Any semantic territory the Curator flagged as overused may contribute at most 1 candidate.
+
 ### Portfolio diversity per ideator
 
 Across 20 candidates, target roughly:
 
-- 4 recognizable standalone words used in a distinctive way
-- 5 compounds or clipped compounds
+- 3 recognizable standalone words used in a distinctive way
+- 4 compounds or clipped compounds
 - 4 blends or portmanteaus
-- 4 invented or root-derived names
+- 6 invented or root-derived names — Latin, Greek, or pronounceable multilingual roots, and phonetic inventions with intuitive spelling
 - 3 mythic, literary, scientific, craft, or cultural transformations that do not directly reuse protected names
 
-Do not force a weak category to hit the quota.
+Do not force a weak category to hit the quota, but an ideator returning fewer than 4 invented or root-derived candidates must regenerate the shortfall before submitting.
 
 ### Candidate schema
 
@@ -412,6 +429,8 @@ The Curator deduplicates the 160 names before voting:
 - Confusingly similar pronunciation
 - Same invented stem with trivial suffix changes
 
+Then enforce a pool-level stem cap: when more than 2 surviving candidates share a leading morpheme or the same suffix pattern (for example five `Thread-` names or three `-wise` names), keep the strongest 2 and cut the rest, crediting all creators of the retained forms.
+
 For a name family, retain the strongest form and preserve all credited creators. Do not perform market or domain research at this stage.
 
 Exit criterion: a blind-ready set of distinct candidate names exists with creator metadata stored separately.
@@ -430,12 +449,14 @@ The Ballot Manager:
 
 Ideators should consider:
 
-- Memorability — 25%
+- Memorability — 20%
 - Pronounceability and spelling — 15%
 - Resonance with the five values — 20%
-- Distinctiveness — 20%
+- Distinctiveness — 25%
 - Product/category fit without being overly narrow — 10%
 - Emotional and tonal fit — 10%
+
+Distinctiveness rewards names a competitor is unlikely to arrive at independently. Voters must not penalize invented or root-derived names merely for unfamiliarity — `Kodak`, `Spotify`, and `Sonos` were unfamiliar once. A ballot in which 10 or more of the 12 ranked names are descriptive two-common-word compounds signals convergence; the Ballot Manager returns it once for revision with that observation.
 
 Availability is not scored because it has not yet been researched.
 
@@ -515,12 +536,20 @@ For each top-12 name, run at most these searches:
 1. Exact quoted name
 2. Exact name plus industry/category keywords
 
-Classify:
+Classify with graded severity:
 
-- **No obvious conflict found** — the limited searches found no meaningful exact use in the target category
-- **Crowded** — multiple unrelated uses make the name difficult to own or discover
-- **Potential conflict** — a meaningful exact use exists in the same or adjacent category
+- **Blocking** — an established, actively operating product or company uses the exact name (or an indistinguishable form) in the same category for the same customer
+- **Caution** — an active exact use exists in a closely adjacent category, or multiple unrelated active uses crowd the name enough to hurt discoverability
+- **Minor signal** — the only findings are small or niche products, dormant or inactive sites, personal or hobby projects, package-registry entries (PyPI, npm, GitHub repositories), app-store side projects, individual profiles, or local businesses in other geographies or distant categories
+- **No obvious conflict found** — the limited searches found no meaningful exact use
 - **Uncertain** — results are incomplete, ambiguous, or unavailable
+
+Severity rules:
+
+- A name with only minor signals is **contested but plausibly winnable** and stays fully viable for recommendation; report the evidence and let the user judge.
+- Only a blocking conflict disqualifies a name from recommendation. Caution downgrades but does not disqualify.
+- A registered domain, by itself, is never a conflict. Nor is a GitHub repository, a package-registry entry, or a LinkedIn page.
+- When grading is borderline, ask: would this entity realistically confuse the target customer or credibly contest the name? If not, grade it minor.
 
 Do not search USPTO, WIPO, EUIPO, other trademark databases, corporate registries, or professional directories by default. Do not expand into close spelling or phonetic variants unless an obvious result makes one directly relevant. Never label a name “available,” “trademark-safe,” or “cleared.”
 
@@ -559,7 +588,7 @@ Do not run separate exhaustive linguistic or reputation research.
   "name": "string",
   "researched_on": "YYYY-MM-DD",
   "queries": ["exact searches used"],
-  "brand_signal": "no_obvious_conflict_found | crowded | potential_conflict | uncertain",
+  "brand_signal": "blocking | caution | minor_signal | no_obvious_conflict_found | uncertain",
   "conflicts": [
     {
       "entity": "string",
@@ -596,7 +625,7 @@ When the environment supports a standalone rich report or canvas, create one. Ot
 Render sections in this exact order:
 
 1. **Report header** — `PRODUCT NAMING DECISION REPORT`, product/category title, and one-sentence naming brief.
-2. **Decision callout** — state whether any candidate is ready for deeper consideration and name the recommended next action.
+2. **Decision callout** — state whether any candidate is ready for deeper consideration and name the recommended next action. Declare that no candidate is ready **only when every leading candidate has a blocking conflict**. Candidates whose worst finding is a caution or minor signal remain viable and must be recommended with their graded risks, not written off.
 3. **Three decision cards** — quality leader, premium/serious option, and warm/playful option. Each card states the name, vote evidence, and material caveat.
 4. **Method statistics** — four prominent counts: personas, raw associations, raw names, and final blind-ballot pool.
 5. **Top-12 vote chart** — horizontal bars in frozen vote order, labeled with Borda points; include axis meaning, source, and research date. If charts are unavailable, use a compact ranked score list.
@@ -697,7 +726,9 @@ Before finalizing, verify:
 - [ ] Round 2 produced 8 new associations × 5 values × 8 ideators
 - [ ] Second dedupe removed near-duplicates and surfaced underused gems
 - [ ] Name generation produced 20 names × 8 ideators before cleanup
+- [ ] Each ideator submitted at least 4 invented or root-derived candidates
 - [ ] Candidate names respect the four-syllable maximum
+- [ ] No more than 2 ballot candidates share a leading morpheme or suffix pattern
 - [ ] Direct famous-character and brand reuse was excluded from finalists
 - [ ] Voting was blind and candidate order randomized
 - [ ] Every ideator ranked exactly 12 names
@@ -709,6 +740,8 @@ Before finalizing, verify:
 - [ ] The top-12 vote chart or score-list fallback is labeled with metric, source, and research date
 - [ ] Every top-12 factual conflict or domain-use claim is cited
 - [ ] Checks stayed within the Stage-7 query budget
+- [ ] Conflict severity was graded; minor signals were not treated as blockers
+- [ ] The decision callout is consistent with the severity grades
 - [ ] Domain results describe visible use, not registration availability
 - [ ] The final answer clearly states that web search is a proxy, not legal or domain clearance
 
@@ -720,7 +753,8 @@ Before finalizing, verify:
 - **Candidate pool too small after dedupe:** run a focused supplemental name-generation pass, then include the new names in the same blind ballot.
 - **Web search unavailable:** mark the result `uncertain`, list what could not be checked, and do not infer clearance.
 - **Domain-use results contradictory:** mark `uncertain`, cite both signals, and recommend manual confirmation for finalists.
-- **Potential conflict among top 12:** preserve its official vote rank, flag it prominently, and recommend the strongest viable alternative separately.
+- **Blocking conflict among top 12:** preserve its official vote rank, flag it prominently, and recommend the strongest viable alternative separately. Do not escalate caution or minor signals into blockers to simplify the recommendation.
+- **Convergent candidate pool:** if the pre-ballot pool is dominated by descriptive compounds despite the Stage-5 rules, rerun name generation for the worst-offending ideators with explicit low-typicality instructions rather than voting on a weak pool.
 
 ## User-facing progress updates
 

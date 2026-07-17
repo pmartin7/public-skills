@@ -10,7 +10,7 @@ Curated by **[Pierre Martin](https://pierre-martin.com)** — CTO of [Gavel](htt
 
 | Skill | Category | What it does |
 |-------|----------|--------------|
-| [`product-naming`](.agents/skills/product-naming/SKILL.md) | Product & Marketing | A multi-agent naming workflow: 8 persona-driven ideators generate and refine hundreds of associations from your product description and five desired customer feelings, then produce brand-name candidates, blind-vote a shortlist, and run lightweight web and domain-use checks on the top 12. Invoke with `/product-naming`. |
+| [`product-naming`](.agents/skills/product-naming/SKILL.md) | Product & Marketing | A multi-agent naming workflow: 8 persona-driven ideators generate and refine hundreds of associations from your product description and five desired customer feelings, then produce brand-name candidates, blind-vote a shortlist, and run lightweight, severity-graded web and domain-use checks on the top 12. Includes a [model and settings guide](.agents/skills/product-naming/README.md). Invoke with `/product-naming`. |
 
 More skills are on the way. Watch or star the repo to follow along.
 
@@ -54,7 +54,21 @@ cp -R public-skills/.agents/skills/* ~/.agents/skills/
 
 **Other tools** — any agent supporting the Agent Skills standard will pick these up from its documented skills directory; copy or symlink the skill folders there.
 
-### 3. Use a skill
+### 3. Optional: install subagent role files
+
+Some skills ship portable subagent role definitions in an `agents/` subfolder (e.g. `product-naming/agents/`). Installing them lets multi-agent workflows run each role on an appropriate model tier; skipping them is fine — every skill works without them.
+
+```bash
+# Cursor
+cp public-skills/.agents/skills/*/agents/*.md .cursor/agents/ 2>/dev/null
+
+# Claude Code
+cp public-skills/.agents/skills/*/agents/*.md .claude/agents/ 2>/dev/null
+```
+
+The files use `model: inherit` by default; each skill's own `README.md` explains how to pin model tiers per role (and how to convert the files to Codex's `.codex/agents/*.toml` format).
+
+### 4. Use a skill
 
 Invoke a skill explicitly with a slash command (e.g. `/product-naming`), or simply describe the task — the agent matches your request against skill descriptions and applies the relevant one. For example:
 

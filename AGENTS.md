@@ -12,6 +12,8 @@ A public collection of [Agent Skills](https://agentskills.io) for technical star
 .agents/skills/<skill-name>/   # One directory per skill (cross-tool standard location)
   SKILL.md                     # Required: frontmatter + instructions
   reference.md                 # Optional: detailed material loaded on demand
+  README.md                    # Optional: human-facing guidance (model selection, host setup)
+  agents/                      # Optional: portable subagent role files (see "Cross-tool subagent roles")
   scripts/                     # Optional: executable helpers
 AGENTS.md                      # This file
 README.md                      # Human-facing docs; lists every skill
@@ -58,6 +60,36 @@ Writing rules:
 - No time-sensitive content (dates, versions, "as of ..."). If unavoidable, isolate it in a clearly marked section.
 - POSIX paths only. Scripts must document their dependencies and state whether the agent should execute or read them.
 
+## Cross-tool subagent roles
+
+Skills with multi-agent workflows may ship role definitions in `<skill-name>/agents/*.md`. These files let hosts that support project subagents (Cursor, Claude Code) run each role on an appropriate model tier. They are an optimization layer, never a dependency.
+
+**Hard rule — graceful degradation:** every skill must be fully executable from `SKILL.md` (plus `reference.md`) alone, with zero agent files installed. Role files repackage instructions the skill already contains; they never hold instructions that exist nowhere else in the skill.
+
+**File format.** Use only the frontmatter intersection that Cursor (`.cursor/agents/*.md`) and Claude Code (`.claude/agents/*.md`) both accept:
+
+```yaml
+---
+name: <skill-name>-<role>      # prefix with the skill name to avoid collisions
+description: What the role does and when the orchestrator should spawn it. Third person.
+model: inherit                 # always `inherit` in committed files — see future-proofing
+---
+Body = the role's system prompt: identity, invariants, and constraints.
+The orchestrator supplies stage-specific prompts, schemas, and inputs at spawn time.
+```
+
+Do not commit tool-specific fields (`tools:` is Claude Code-only; `readonly:` and `is_background:` are Cursor-only). Document them as optional post-install additions in the skill's `README.md` instead, so one committed file loads cleanly in every host.
+
+**Future-proofing — never pin models.** Committed files must not contain model IDs, vendor aliases, or version numbers; they rot as new models ship. Instead, the first body line of each role declares its tier semantically ("Model tier: strongest creative model available" / "fastest inexpensive model available") plus a reasoning-effort hint (`low`/`medium`/`high` level names are durable across model generations). Hosts and users resolve tiers at install or spawn time. Concrete model names belong only in a skill `README.md` section clearly marked as point-in-time.
+
+**Installation mapping** (document in the skill's `README.md`):
+
+- Cursor — copy `agents/*.md` to `.cursor/agents/` (project) or `~/.cursor/agents/` (global).
+- Claude Code — copy `agents/*.md` to `.claude/agents/` or `~/.claude/agents/`.
+- Codex — convert each file to `.codex/agents/<name>.toml`: frontmatter `name` and `description` map directly, the Markdown body becomes `developer_instructions`, and the tier hint may be expressed as `model_reasoning_effort`. Leave `model` unset so Codex auto-routes by task. Codex also honors per-spawn model requests made directly in skill instructions, so conversion is optional.
+
+**SKILL.md wiring.** The skill's roles section should state: use the shipped role definitions when the host has them installed or supports registering them; otherwise emulate each role as an isolated pass using the prompts in `reference.md`, and disclose the method.
+
 ## Validation checklist
 
 Before finishing any skill change, verify:
@@ -70,6 +102,8 @@ Before finishing any skill change, verify:
 - [ ] Failure handling covers missing tools, malformed output, and unavailable data
 - [ ] `README.md` skill table is updated
 - [ ] Frontmatter starts and ends with `---` and contains valid `name:` and `description:` keys
+- [ ] Any `agents/*.md` role files use only the shared frontmatter fields (`name`, `description`, `model: inherit`), contain no model IDs, and duplicate no instructions that are absent from the skill itself
+- [ ] The skill runs end to end with no agent files installed (graceful degradation)
 
 ## Boundaries
 
