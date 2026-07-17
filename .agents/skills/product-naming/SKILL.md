@@ -1,11 +1,11 @@
 ---
 name: product-naming
-description: Generate, refine, rank, and research memorable product or company names from a short product description and five desired customer feelings. Use when the user invokes /product-naming or asks for a rigorous multi-agent naming process with brand and domain checks.
+description: Generate, refine, rank, and lightly research memorable product or company names from a short product description and five desired customer feelings. Use when the user invokes /product-naming or asks for a rigorous multi-agent naming process with lightweight web and domain checks.
 ---
 
 # Product Naming
 
-A multi-agent naming workflow that moves from emotional associations to a voted shortlist, then performs point-in-time brand and domain research.
+A multi-agent naming workflow that moves from emotional associations to a voted shortlist, then performs lightweight point-in-time web and domain checks.
 
 ## Invocation
 
@@ -28,17 +28,17 @@ Optional but useful:
 - Preferred domain extensions
 - Whether the name must work as a company name, product name, or both
 
-If the two required inputs are present, begin without asking unnecessary follow-up questions. Infer missing optional details from the product description and state material assumptions. Ask one concise question only when the category, customer, or intended meaning is too ambiguous to perform useful availability research.
+If the two required inputs are present, begin without asking unnecessary follow-up questions. Infer missing optional details from the product description and state material assumptions. Ask one concise question only when the category, customer, or intended meaning is too ambiguous to perform useful web checks.
 
 ## Outcome
 
 Produce:
 
 - A researched **top 12** selected strictly from ideator voting
-- Brand-conflict and domain-availability signals for every top-12 name
+- Lightweight web-presence and domain-use signals for every top-12 name
 - The **top 30 names overall** by vote score
 - Concise rationales connecting each shortlisted name to the product and values
-- A clear statement that the research is preliminary and is not legal trademark clearance
+- A clear statement that the checks are proxies, not trademark or registration clearance
 
 ## Operating principles
 
@@ -48,7 +48,7 @@ Produce:
 4. **Do not confuse inspiration with permission.** Famous characters, franchises, and existing brands may inspire associations, but direct reuse should normally be excluded from final candidates.
 5. **Prefer memorable speech.** Two to three syllables is ideal; four is the maximum unless the user explicitly relaxes the rule.
 6. **Blind the vote.** Remove ideator identity and randomize candidate order before voting.
-7. **Do not overclaim availability.** Search results and domain checks are point-in-time signals, not legal opinions or guaranteed registrations.
+7. **Keep checks lightweight and honest.** Use simple web searches as proxies for obvious conflicts and domain use. Do not perform trademark-database, corporate-registry, or exhaustive domain research unless the user explicitly asks.
 8. **Keep provenance.** Every association and name should retain its source persona, linked values, and generation round until the blind-voting stage.
 9. **Make the workflow resumable.** Save the structured result of every stage when the environment supports files or persistent state.
 
@@ -59,7 +59,7 @@ The orchestrator creates the following agents or emulates them as isolated passe
 - **8 Ideators** — each receives a distinct socio-economic and decision-making persona
 - **1 Curator** — deduplicates and organizes association pools after rounds 1 and 2
 - **1 Ballot Manager** — anonymizes, randomizes, tallies, and resolves ties
-- **1 Availability Researcher** — researches market conflicts, trademarks signals, domains, and obvious language risks
+- **1 Availability Researcher** — runs lightweight web searches for obvious name conflicts and domain use
 - **1 Orchestrator** — validates inputs, manages state, enforces schemas, and writes the final report
 
 Never claim that parallel subagents were used when the environment does not provide them. In that case, perform eight deliberately isolated ideation passes and label the method accurately.
@@ -79,7 +79,7 @@ product-naming/
   06-name-candidates.jsonl
   07-ballots.jsonl
   08-ranked-names.json
-  09-availability-research.json
+  09-web-domain-checks.json
   10-final-report.md
 ```
 
@@ -399,7 +399,7 @@ Do not force a weak category to hit the quota.
 }
 ```
 
-Scores are 1-5 and are advisory only. Ideators should not search availability yet; early searching causes convergence toward mediocre domain-driven names.
+Scores are 1-5 and are advisory only. Ideators should not run web or domain checks yet; early searching causes convergence toward mediocre domain-driven names.
 
 ### Pre-ballot cleanup
 
@@ -489,81 +489,67 @@ Apply in order:
 
 Also retain the **top 30 names overall** by the same ranking.
 
-Exit criterion: top 12 and top 30 are frozen before availability research begins.
+Exit criterion: top 12 and top 30 are frozen before lightweight web and domain checks begin.
 
-## Stage 7 — Brand and domain research
+## Stage 7 — Lightweight web and domain checks
 
 The Availability Researcher investigates only after voting is complete.
 
-Research the top 12 deeply. Research the remaining top-30 names lightly enough to identify obvious conflicts, but the final availability table is required only for the top 12.
+Run lightweight checks on the top 12 only. The purpose is to catch obvious conflicts and signs of domain use without turning naming into a trademark or domain-clearance project.
 
 ### Research date and scope
 
 Every result must record:
 
-- Research date and time
-- Target countries or jurisdictions
-- Industry and category terms used
-- Domain extensions checked
-- Sources consulted
+- Research date
+- Exact web queries used
+- Domain names searched
+- Sources supporting any identified conflict
 
-Availability changes quickly. Phrase findings as point-in-time signals.
+Search results change quickly. Phrase findings as point-in-time proxies.
 
 ### Brand-conflict research
 
-For each top-12 name, search:
+For each top-12 name, run at most these searches:
 
 1. Exact quoted name
 2. Exact name plus industry/category keywords
-3. Exact name plus `company`, `product`, `software`, `app`, or relevant category nouns
-4. Close spelling variants
-5. Close phonetic variants
-6. Major app stores or marketplaces when relevant
-7. Relevant official trademark databases when accessible
-8. Corporate registries or professional directories when relevant and practical
 
 Classify:
 
-- **Likely clear signal** — no meaningful exact or close use found in the target category; still requires counsel
-- **Crowded** — multiple uses exist, but not necessarily a direct category conflict
-- **Potential conflict** — a meaningful exact or close use exists in the same or adjacent category
-- **High-risk conflict** — prominent or registered use appears likely to block or confuse
-- **Uncertain** — evidence is incomplete, contradictory, inaccessible, or jurisdiction-dependent
+- **No obvious conflict found** — the limited searches found no meaningful exact use in the target category
+- **Crowded** — multiple unrelated uses make the name difficult to own or discover
+- **Potential conflict** — a meaningful exact use exists in the same or adjacent category
+- **Uncertain** — results are incomplete, ambiguous, or unavailable
 
-Never label a name “legally available,” “trademark-safe,” or “cleared.”
+Do not search USPTO, WIPO, EUIPO, other trademark databases, corporate registries, or professional directories by default. Do not expand into close spelling or phonetic variants unless an obvious result makes one directly relevant. Never label a name “available,” “trademark-safe,” or “cleared.”
 
 ### Domain research
 
-At minimum check:
+For each name, search the web for:
 
-- Exact-name `.com`
-- Preferred extension(s) supplied by the user
-- Relevant category extensions such as `.ai`, `.app`, `.io`, `.co`, or jurisdictional domains
-- Sensible modified `.com` forms such as `get{name}.com`, `use{name}.com`, `try{name}.com`, `join{name}.com`, or `{name}{category}.com`
+- The exact-name `.com`
+- One preferred extension supplied by the user, when applicable
+- At most one sensible modified `.com` if the exact `.com` appears used
 
-Only call a domain available when a current registrar, registry, or authoritative lookup shows it can be registered. A domain that fails to resolve is not necessarily available.
+Use search-engine results and visible website use only. Do not query registrars, WHOIS, registry services, aftermarket listings, DNS, or bulk domain tools by default.
 
 Classify each domain:
 
-- **Available to register**
-- **Registered, inactive or parked**
-- **Registered and actively used**
-- **For sale / aftermarket**
-- **Unknown or lookup failed**
+- **In active use**
+- **No active use found**
+- **Uncertain**
 
-Do not recommend awkward or misleading domain hacks merely to manufacture availability. Prefer a clean modified `.com` over an obscure extension when trust matters.
+`No active use found` does not mean the domain is unregistered or available to register. Do not recommend awkward domain hacks merely to manufacture an option.
 
-### Language and reputation checks
+### Obvious reputation checks
 
-For target markets, check:
+Record only risks surfaced by the same searches, such as:
 
 - Obvious negative meanings or vulgar homophones
-- Hard-to-pronounce consonant clusters
-- Frequent spelling ambiguity
-- Common words that make search discovery unusually difficult
 - Strong political, extremist, medical, financial, or adult associations that would surprise the user
 
-Do not claim exhaustive linguistic clearance.
+Do not run separate exhaustive linguistic or reputation research.
 
 ### Research schema
 
@@ -571,36 +557,31 @@ Do not claim exhaustive linguistic clearance.
 {
   "candidate_id": "N-041",
   "name": "string",
-  "researched_at": "ISO-8601 timestamp",
-  "jurisdictions": ["US", "EU"],
-  "industry_queries": ["exact searches used"],
-  "brand_signal": "likely_clear_signal | crowded | potential_conflict | high_risk_conflict | uncertain",
+  "researched_on": "YYYY-MM-DD",
+  "queries": ["exact searches used"],
+  "brand_signal": "no_obvious_conflict_found | crowded | potential_conflict | uncertain",
   "conflicts": [
     {
       "entity": "string",
       "category": "string",
-      "jurisdiction": "string",
       "why_relevant": "string",
-      "source": "URL or source citation"
+      "source": "URL"
     }
   ],
-  "trademark_database_signal": "none_found | relevant_result | inaccessible | not_checked",
   "domains": [
     {
       "domain": "example.com",
-      "status": "available_to_register | registered_inactive | registered_active | aftermarket | unknown",
-      "source": "registrar or registry source",
-      "checked_at": "ISO-8601 timestamp"
+      "status": "active_use | no_active_use_found | uncertain",
+      "source": "URL or search query"
     }
   ],
-  "best_domain_option": "string or null",
-  "language_risks": ["string"],
-  "research_confidence": "high | medium | low",
-  "notes": "limitations and interpretation"
+  "best_domain_lead": "string or null",
+  "obvious_reputation_risks": ["string"],
+  "notes": "limitations and follow-up needed"
 }
 ```
 
-Exit criterion: every top-12 name has a supported brand signal, domain results, confidence level, and research limitations.
+Exit criterion: every top-12 name has two name-search results, an exact-domain search, and explicit limitations; no default authoritative-database research was performed.
 
 ## Stage 8 — Final synthesis
 
@@ -619,22 +600,22 @@ A compact recap of:
 - Tone and constraints
 - Material assumptions
 
-#### 2. Top 12 researched shortlist
+#### 2. Top 12 checked shortlist
 
 Use a table with these columns:
 
-| Rank | Name | Pronunciation | Syllables | Why it works | Values | Vote points / voters | Brand signal | Exact .com | Best domain option | Key risk |
+| Rank | Name | Pronunciation | Syllables | Why it works | Values | Vote points / voters | Web conflict signal | Exact .com use | Best domain lead | Key risk |
 |---|---|---:|---:|---|---|---:|---|---|---|---|
 
 Keep each rationale concise but specific.
 
 After the table, identify:
 
-- **Best overall naming candidate** based on name quality and research, clearly distinguishing this judgment from vote rank
-- **Best exact-domain option**
+- **Best overall naming candidate** based on name quality and lightweight checks, clearly distinguishing this judgment from vote rank
+- **Best domain lead**
 - **Best premium/serious option**
 - **Best warm/playful option** when relevant
-- Any top-voted name that should probably be rejected because of a high-risk conflict
+- Any top-voted name that should probably be rejected because of a potential conflict
 
 Do not silently reorder the official top 12. You may provide a separate recommended decision order after research.
 
@@ -665,14 +646,16 @@ Mention any deviations from the specified counts and why.
 
 Use language equivalent to:
 
-> Brand, trademark, domain, and language checks are preliminary point-in-time research, not legal clearance. Domain status can change immediately, and a qualified trademark attorney should review finalists before launch or material investment.
+> These web and domain-use checks are preliminary point-in-time proxies, not trademark or registration clearance. A qualified trademark attorney and a registrar should verify finalists before launch or material investment.
+
+Also state that web searches are only proxies: `no obvious conflict found` is not proof of trademark clearance, and `no active use found` is not proof that a domain can be registered.
 
 ### Citation requirements
 
 When web research is performed:
 
-- Cite every factual conflict or availability claim
-- Prefer official trademark databases, registries, company sites, app stores, and registrar/registry lookups
+- Cite every factual conflict or domain-use claim
+- Use ordinary web search results and directly discovered company or product sites
 - Separate inference from confirmed facts
 - Include the research date
 
@@ -702,9 +685,10 @@ Before finalizing, verify:
 - [ ] Borda scores and tie-breakers were calculated correctly
 - [ ] Official top 12 were frozen before research
 - [ ] Top 30 were retained
-- [ ] Every top-12 factual availability claim is cited
-- [ ] Domain “availability” came from a registrar/registry lookup, not DNS alone
-- [ ] The final answer clearly states that research is not legal clearance
+- [ ] Every top-12 factual conflict or domain-use claim is cited
+- [ ] Checks stayed within the Stage-7 query budget
+- [ ] Domain results describe visible use, not registration availability
+- [ ] The final answer clearly states that web search is a proxy, not legal or domain clearance
 
 ## Failure handling
 
@@ -712,9 +696,9 @@ Before finalizing, verify:
 - **Malformed agent output:** repair once against the schema; rerun the stage if counts remain wrong.
 - **Too many duplicates:** instruct the affected ideator to regenerate only rejected slots using underexplored territories.
 - **Candidate pool too small after dedupe:** run a focused supplemental name-generation pass, then include the new names in the same blind ballot.
-- **Web or trademark database unavailable:** mark the result `uncertain`, list what could not be checked, and do not infer clearance.
-- **Domain lookup contradictory:** mark `unknown`, cite both signals, and recommend manual registrar confirmation.
-- **High-risk conflict among top 12:** preserve its official vote rank, flag it prominently, and recommend the strongest viable alternative separately.
+- **Web search unavailable:** mark the result `uncertain`, list what could not be checked, and do not infer clearance.
+- **Domain-use results contradictory:** mark `uncertain`, cite both signals, and recommend manual confirmation for finalists.
+- **Potential conflict among top 12:** preserve its official vote rank, flag it prominently, and recommend the strongest viable alternative separately.
 
 ## User-facing progress updates
 

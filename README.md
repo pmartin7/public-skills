@@ -10,7 +10,7 @@ Curated by **[Pierre Martin](https://pierre-martin.com)** — CTO of [Gavel](htt
 
 | Skill | Category | What it does |
 |-------|----------|--------------|
-| [`product-naming`](.agents/skills/product-naming/SKILL.md) | Product & Marketing | A multi-agent naming workflow: 8 persona-driven ideators generate and refine hundreds of associations from your product description and five desired customer feelings, then produce brand-name candidates, blind-vote a shortlist, and run point-in-time brand-conflict and domain-availability research on the top 12. Invoke with `/product-naming`. |
+| [`product-naming`](.agents/skills/product-naming/SKILL.md) | Product & Marketing | A multi-agent naming workflow: 8 persona-driven ideators generate and refine hundreds of associations from your product description and five desired customer feelings, then produce brand-name candidates, blind-vote a shortlist, and run lightweight web and domain-use checks on the top 12. Invoke with `/product-naming`. |
 
 More skills are on the way. Watch or star the repo to follow along.
 
